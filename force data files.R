@@ -4,16 +4,24 @@ library(patchwork)
 source('aurora functions.R')
 theme_set(theme_bw())
 
+#### this section specific to the data set ####
+
 dataFolder <- 'C:/Users/sarmc72/OneDrive - Linköpings universitet/projects - in progress/Peripheral speed force/MNG experiment/Aurora data/'
 allDataFiles <- list.files(dataFolder, 'ddf', recursive = TRUE)
+
+# this excludes bad data files and also sorts into length and force based on text in the file names
 sortedDataFiles <- tibble(filename = allDataFiles,
                           type = case_when(
                             !str_detect(filename,'(length)|(Velocity)|(bad)|(dont use)|([0-9]v)') ~ 'force',
                             !str_detect(filename,'(force)|(Force)|(bad)|(dont use)') ~ 'length'
                             )
                           )
+
+# if you edit the above, you need to end up with something called forceDataFiles, which is the list of data files you want to process
 forceDataFiles <- sortedDataFiles %>% 
   dplyr::filter(type == 'force') %>% pull(filename)
+
+#### ---- ####
 
 outputFolder <- '../Processed Data/'
 timenow <- format(Sys.time(), '%Y%m%d_%H%M%S')
